@@ -178,7 +178,8 @@ export async function monitorWebInbox(options: {
         }
       }
       const participantJid = msg.key?.participant ?? undefined;
-      const from = group ? remoteJid : await resolveInboundJid(remoteJid);
+      const isNewsletter = remoteJid.endsWith("@newsletter");
+      const from = (group || isNewsletter) ? remoteJid : await resolveInboundJid(remoteJid);
       if (!from) {
         continue;
       }
@@ -186,7 +187,7 @@ export async function monitorWebInbox(options: {
         ? participantJid
           ? await resolveInboundJid(participantJid)
           : null
-        : from;
+        : (isNewsletter ? null : from);
 
       let groupSubject: string | undefined;
       let groupParticipants: string[] | undefined;

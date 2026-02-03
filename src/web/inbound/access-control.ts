@@ -115,6 +115,16 @@ export async function checkInboundAccessControl(params: {
     }
   }
 
+  // Newsletter access control: always allow (public broadcast).
+  if (params.from.endsWith("@newsletter")) {
+    return {
+      allowed: true,
+      shouldMarkRead: true,
+      isSelfChat,
+      resolvedAccountId: account.accountId,
+    };
+  }
+
   // DM access control (secure defaults): "pairing" (default) / "allowlist" / "open" / "disabled".
   if (!params.group) {
     if (params.isFromMe && !isSamePhone) {

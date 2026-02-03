@@ -5,7 +5,7 @@ const WHATSAPP_LID_RE = /^(\d+)@lid$/i;
 
 function stripWhatsAppTargetPrefixes(value: string): string {
   let candidate = value.trim();
-  for (;;) {
+  for (; ;) {
     const before = candidate;
     candidate = candidate.replace(/^whatsapp:/i, "").trim();
     if (candidate === before) {
@@ -52,6 +52,11 @@ function extractUserJidPhone(jid: string): string | null {
   return null;
 }
 
+export function isWhatsAppNewsletterJid(value: string): boolean {
+  const candidate = stripWhatsAppTargetPrefixes(value);
+  return candidate.endsWith("@newsletter");
+}
+
 export function normalizeWhatsAppTarget(value: string): string | null {
   const candidate = stripWhatsAppTargetPrefixes(value);
   if (!candidate) {
@@ -60,6 +65,9 @@ export function normalizeWhatsAppTarget(value: string): string | null {
   if (isWhatsAppGroupJid(candidate)) {
     const localPart = candidate.slice(0, candidate.length - "@g.us".length);
     return `${localPart}@g.us`;
+  }
+  if (isWhatsAppNewsletterJid(candidate)) {
+    return candidate;
   }
   // Handle user JIDs (e.g. "41796666864:0@s.whatsapp.net")
   if (isWhatsAppUserTarget(candidate)) {
